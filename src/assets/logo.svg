@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Five bars: tall-hanging-tall is the M, tall-standing-tall the W; they share the middle bar. -->
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="#18181A"/>
+  <g fill="#F6F3EA">
+  <rect x="198" y="292" width="84" height="440" rx="42"/>
+  <rect x="334" y="292" width="84" height="246.4" rx="42"/>
+  <rect x="470" y="292" width="84" height="440" rx="42"/>
+  <rect x="606" y="485.6" width="84" height="246.4" rx="42"/>
+  <rect x="742" y="292" width="84" height="440" rx="42"/>
+  </g>
+</svg>
