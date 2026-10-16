@@ -3,8 +3,10 @@
 Dictation only. A slimmed-down fork of [OpenWhispr](https://github.com/OpenWhispr/openwhispr) 1.10.3.
 
 Press a hotkey, speak, get a cleaned-up transcript pasted where your cursor is. History,
-dictionary, one speech-to-text provider and an optional cleanup LLM. Works with Groq or OpenAI
-Whisper and with any OpenAI-compatible endpoint such as a LiteLLM proxy.
+dictionary, one speech-to-text provider and an optional cleanup LLM. Bring your own API key
+for a supported provider, or use an OpenAI-compatible endpoint such as a LiteLLM proxy.
+Both speech-to-text and cleanup use APIs; running local models inside the app is currently
+not supported.
 
 ## Run
 
@@ -52,8 +54,9 @@ StartupWMClass=minimal-whispr
 
 ## Config
 
-`~/.config/minimal-whispr/config.json` syncs both ways with the Settings UI. See
-`config.example.json`:
+`~/.config/minimal-whispr/config.json` syncs both ways with the Settings UI. If
+`XDG_CONFIG_HOME` is set, the file lives at `$XDG_CONFIG_HOME/minimal-whispr/config.json`
+instead. See `config.example.json`:
 
 ```json
 {
@@ -77,7 +80,9 @@ StartupWMClass=minimal-whispr
 }
 ```
 
-API keys stay in that file (mode 600) and are never part of the repository.
+The config file contains API keys and is written with mode `600`. Keep it private;
+the repository includes only an example with empty keys. A root-level `config.json` and
+local `.env` files are ignored by Git.
 
 Custom/LiteLLM STT does not send the Whisper `prompt`; Groq and OpenAI still do.
 
@@ -85,18 +90,15 @@ Custom/LiteLLM STT does not send the Whisper `prompt`; Groq and OpenAI still do.
 
 The UI covers dictation, history, dictionary and STT/cleanup settings
 (`src/components/MinimalSettings.tsx`). Notes, meetings, chat, the voice assistant, cloud
-accounts and auto-updates are hidden or switched off (`src/config/slimFork.ts`,
-`src/config/releaseRepo.js`). Shared upstream code and dependencies remain in the tree until they can be
-removed separately, so much of `src/` and `test/` still refers to OpenWhispr features.
+accounts, local-model controls and auto-updates are hidden or switched off. The current
+settings UI uses API providers for both transcription and cleanup.
 
-Downloaded local models live in `~/.cache/openwhispr`, the same place upstream OpenWhispr uses,
-so both apps share them; uninstalling Minimal Whispr leaves that cache alone.
+Shared upstream code, dependencies and build scripts remain in the tree, including
+local-model infrastructure. Some startup and packaging scripts still download upstream
+helpers and model assets; this does not make local inference a supported feature. No model
+weights or model cache are included in this repository.
 
-Releases are not published yet. To enable auto-updates for your own builds, set
-`RELEASE_REPO` in `src/config/releaseRepo.js` and `publish` in `electron-builder.json`.
-
-`tools/dictate` holds an earlier standalone Python/GTK prototype
-([README](tools/dictate/README.md)). It is independent of the Electron app.
+Releases are not published yet; run the app from source using the instructions above.
 
 ## Credits and license
 
