@@ -12,6 +12,11 @@ not supported.
 
 Requires Node.js 24+ (see `.nvmrc`).
 
+The codebase retains macOS, Windows and Linux integration from OpenWhispr. The current
+fork has not yet been verified end to end on macOS or Windows; CI runs on Ubuntu only.
+The commands below are shared across platforms; see the platform-specific prerequisites
+before starting.
+
 ```bash
 npm install
 npm run dev
@@ -30,6 +35,31 @@ npx electron .
 
 Run `npm run build:renderer` again after UI changes. Icons come from `src/assets/logo.svg` and
 `logo-mark.svg`; see `src/assets/README.md` for regenerating them.
+
+### macOS
+
+Native helper build scripts cover Apple Silicon and Intel Macs. Install Apple's Xcode
+Command Line Tools before running `npm run dev`; the startup scripts compile Swift and
+Objective-C helpers:
+
+```bash
+xcode-select --install
+```
+
+Allow microphone access for recording and Accessibility access for automatic pasting in
+System Settings. When running from source, these permissions may be associated with Electron
+rather than a packaged Minimal Whispr app.
+
+### Windows
+
+Use a native Windows terminal with the x64 version of Node.js. The native hotkey and paste
+helpers can be compiled locally or downloaded by the startup scripts. For local compilation,
+install Visual Studio Build Tools with the C++ workload and run from its Developer PowerShell;
+MinGW-w64 is another compiler supported by the helper scripts. Native npm dependencies may
+also require Python 3 and the C++ build tools if a prebuilt module is unavailable.
+
+Enable microphone access for desktop apps in Windows Settings. Automatic pasting uses the
+Windows helper, with NirCmd/PowerShell fallbacks.
 
 ### Linux
 
@@ -80,7 +110,9 @@ instead. See `config.example.json`:
 }
 ```
 
-The config file contains API keys and is written with mode `600`. Keep it private;
+On Windows, the default path is `%USERPROFILE%\.config\minimal-whispr\config.json`.
+
+The config file contains API keys and is written with mode `600` on Unix systems. Keep it private;
 the repository includes only an example with empty keys. A root-level `config.json` and
 local `.env` files are ignored by Git.
 
