@@ -74,7 +74,7 @@
     "format:check": "eslint . && cd src && eslint . && prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "lint": "eslint . && cd src && eslint .",
     "test": "node --import tsx --test \"test/**/*.test.js\"",
-    "test:ci": "node --import tsx --test test/helpers/updater.test.js test/helpers/ipcSenderGuard.test.js test/helpers/apiKeyUpdatesIpc.test.js test/helpers/linuxUrlSchemeHandler.test.js test/helpers/agentNameDictionary.test.js test/helpers/jsonConfigMap.test.js test/helpers/sttWhisperPrompt.test.js test/helpers/windowConfigTypes.test.js",
+    "test:ci": "node --import tsx --test test/helpers/updater.test.js test/helpers/ipcSenderGuard.test.js test/helpers/apiKeyUpdatesIpc.test.js test/helpers/linuxUrlSchemeHandler.test.js test/helpers/agentNameDictionary.test.js test/helpers/jsonConfigMap.test.js test/helpers/sttWhisperPrompt.test.js test/helpers/windowConfigTypes.test.js test/helpers/meetingBatch.test.js test/helpers/meetingRecordingState.test.js test/helpers/meetingBatchToggle.test.js test/helpers/meetingDetection.test.js",
     "typecheck": "cd src && tsc --noEmit",
     "quality-check": "npm run format:check && npm run typecheck",
     "i18n:check": "node scripts/check-i18n.js",

@@ -1956,8 +1956,8 @@
         "hyprlandUnbindDescription": "在 Hyprland 上，OpenWhispr 会占用所选快捷键。OpenWhispr 注册快捷键时，任何使用相同组合键的现有 Hyprland 绑定都会被解除。"
       },
       "meetingHotkey": {
-        "title": "会议模式快捷键",
-        "description": "启动会议模式并将面板固定到屏幕侧边",
+        "title": "Meeting hotkey",
+        "description": "Starts or stops a meeting recording from anywhere.",
         "layoutLabel": "通过快捷键触发时,打开方式:",
         "layoutFullWidth": "全宽",
         "layoutSidePanel": "侧边栏"
@@ -3631,7 +3631,8 @@
     "notSignedIn": "未登录",
     "chat": "聊天",
     "collapse": "折叠侧边栏",
-    "expand": "展开侧边栏"
+    "expand": "展开侧边栏",
+    "meetings": "Meetings"
   },
   "chat": {
     "newChat": "新对话",
@@ -4875,6 +4876,61 @@
     "details": {
       "provider": "服务商",
       "requestId": "请求 ID"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Stop meeting",
+    "unsupportedTranscriptionMode": "This transcription mode is not supported for meetings. Choose a cloud provider or self-hosted service.",
+    "title": "Meetings",
+    "checking": "Checking system audio…",
+    "systemAvailable": "System audio is available. Headphones are recommended.",
+    "systemUnavailable": "System audio unavailable; recording can continue with microphone only.",
+    "micUnavailable": "Microphone unavailable; recording system audio only.",
+    "noAudio": "Neither microphone nor system audio is available.",
+    "start": "Start meeting",
+    "stop": "Stop recording",
+    "recording": "Recording",
+    "mic": "Microphone",
+    "system": "System audio",
+    "empty": "No meetings yet.",
+    "untitled": "Untitled meeting",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "copy": "Copy as Markdown",
+    "export": "Export .md",
+    "regenerate": "Regenerate summary",
+    "retry": "Retry",
+    "cancel": "Cancel processing",
+    "delete": "Delete",
+    "confirmDelete": "Delete this meeting and its audio?",
+    "select": "Select a meeting to see its summary and transcript.",
+    "settingsDescription": "Summaries use your configured cleanup provider, even when dictation cleanup is off.",
+    "keepAudio": "Keep meeting audio",
+    "keepAudioDescription": "Keep the recordings after successful processing. Audio is retained on failure for retry.",
+    "prompt": "Summary prompt",
+    "promptPlaceholder": "Leave empty for the default meeting prompt.",
+    "status": {
+      "recording": "Recording",
+      "transcribing": "Transcribing",
+      "segmenting": "Preparing audio",
+      "summarizing": "Summarizing",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "micStopped": "Microphone recording stopped.",
+    "systemStopped": "System audio stopped; other available tracks continue.",
+    "detection": {
+      "title": "在 {{app}} 中检测到会议",
+      "description": "要录制此会议吗？在你开始之前不会录制任何内容。",
+      "start": "开始录制",
+      "dismiss": "关闭",
+      "setting": "自动检测会议",
+      "settingDescription": "当 Teams、Zoom、Webex 或 Skype 使用麦克风时，悬浮胶囊会提示录制。只有在你确认后才会开始录制。适用于 Linux 和 Windows。",
+      "pillTitle": "录制 {{app}} 通话？",
+      "pillStart": "录制",
+      "endTitle": "{{app}} 通话已结束？",
+      "stop": "停止录制",
+      "keepRecording": "继续录制"
     }
   }
 }

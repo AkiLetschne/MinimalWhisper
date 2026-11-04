@@ -30,6 +30,7 @@ async function transcribeWithTinfoil({
   language,
   prompt,
   apiKey,
+  signal,
 }) {
   if (!apiKey?.trim()) {
     throw providerError(PROVIDER_ERROR_CODES.KEY_MISSING, {
@@ -53,6 +54,7 @@ async function transcribeWithTinfoil({
 
   const response = await tinfoilSecureFetch(TINFOIL_TRANSCRIPTION_PATH, {
     method: "POST",
+    signal,
     headers: { Authorization: `Bearer ${apiKey}` },
     body: formData,
   });

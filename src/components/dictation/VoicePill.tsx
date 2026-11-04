@@ -27,6 +27,8 @@ interface VoicePillProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"
   showExpandChevron?: boolean;
   isDragging?: boolean;
   horizontalDirection?: "left" | "right";
+  /** A meeting records in the background while dictation is idle. */
+  meetingRecording?: boolean;
 }
 
 // Sized from WAVEFORM_BAR_COUNT so a bar-count change can never silently
@@ -69,6 +71,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
     showExpandChevron = false,
     isDragging = false,
     horizontalDirection = "right",
+    meetingRecording = false,
     className,
     style,
     ...props
@@ -85,10 +88,15 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
   // as work already in flight before any transcript exists.
   const showSignalGlow = !isUnavailable && isThinking;
   const isPanel = variant === "panel";
+  // A running meeting borrows the compact listening pill, in red with a slow
+  // wave instead of live levels; hovering it previews the stop action.
+  const meetingMode = meetingRecording && !isRecording;
+  const meetingHover = meetingMode && state === "hover";
   const collapseToIdentity = collapseToLogo || isThinking;
   const showCompactPill =
-    !collapseToIdentity && (isRecording || expanded || (isPanel && !waveformOnlyWhileRecording));
-  const showDivider = showCompactPill && waveformVisible && !isRecording;
+    !collapseToIdentity &&
+    (isRecording || expanded || meetingMode || (isPanel && !waveformOnlyWhileRecording));
+  const showDivider = showCompactPill && waveformVisible && !isRecording && !meetingMode;
   // The hidden divider's margins are what carry the compact pill's 6px
   // icon↔waveform gap; a visible divider keeps 4px flanking its 1px rule.
   const dividerMargin = showCompactPill ? (showDivider ? 4 : COMPACT_CONTENT_GAP_PX / 2) : 0;
@@ -126,6 +134,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       data-agent-mode={agentMode || undefined}
       data-agent-beam-active={(agentMode && isThinking) || undefined}
       data-expand-chevron={showExpandChevron || undefined}
+      data-meeting-recording={meetingMode || undefined}
       {...props}
     >
       <div
@@ -141,7 +150,9 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
         <span
           className={cn(
             "voice-pill-identity-logo absolute inset-0 transition-[opacity,transform] duration-200 ease-out",
-            showExpandChevron ? "translate-y-1 scale-75 opacity-0" : "scale-100 opacity-100"
+            showExpandChevron || meetingHover
+              ? "translate-y-1 scale-75 opacity-0"
+              : "scale-100 opacity-100"
           )}
         >
           <BrandMarkIcon
@@ -152,6 +163,12 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
             )}
           />
         </span>
+        <span
+          className={cn(
+            "voice-pill-meeting-stop absolute inset-0 m-auto transition-[opacity,transform] duration-200 ease-out",
+            meetingHover ? "scale-100 opacity-100" : "scale-75 opacity-0"
+          )}
+        />
         <ChevronUp
           className={cn(
             "voice-pill-expand-chevron absolute inset-0 m-auto size-5 transition-[opacity,transform] duration-200 ease-out",
@@ -182,15 +199,19 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
         }}
       >
         <div
-          className="absolute inset-0 flex items-center justify-center gap-0.75 transition-opacity duration-200 ease-out"
+          className="voice-pill-resting-wave absolute inset-0 flex items-center justify-center gap-0.75 transition-opacity duration-200 ease-out"
           style={{ opacity: showCompactPill && waveformVisible && !isRecording ? 1 : 0 }}
+          data-meeting={meetingMode || undefined}
           aria-hidden="true"
         >
           {RESTING_WAVE_HEIGHTS.map((height, index) => (
             <span
               key={`${height}-${index}`}
               className="w-0.5 rounded-full bg-current"
-              style={{ height }}
+              style={{
+                height,
+                animationDelay: meetingMode ? `${index * -0.16}s` : undefined,
+              }}
             />
           ))}
         </div>

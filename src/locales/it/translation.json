@@ -1956,8 +1956,8 @@
         "hyprlandUnbindDescription": "Su Hyprland, OpenWhispr riserva la scorciatoia selezionata. Qualsiasi associazione Hyprland esistente che usa la stessa combinazione di tasti verrà rimossa quando OpenWhispr registra la sua scorciatoia."
       },
       "meetingHotkey": {
-        "title": "Scorciatoia modalità meeting",
-        "description": "Avvia la modalità meeting e posiziona il pannello a lato dello schermo",
+        "title": "Meeting hotkey",
+        "description": "Starts or stops a meeting recording from anywhere.",
         "layoutLabel": "Quando attivata da scorciatoia, apri in:",
         "layoutFullWidth": "Larghezza completa",
         "layoutSidePanel": "Pannello laterale"
@@ -3631,7 +3631,8 @@
     "notSignedIn": "Non hai effettuato l'accesso",
     "chat": "Chat",
     "collapse": "Comprimi barra laterale",
-    "expand": "Espandi barra laterale"
+    "expand": "Espandi barra laterale",
+    "meetings": "Meetings"
   },
   "chat": {
     "newChat": "Nuova chat",
@@ -4875,6 +4876,61 @@
     "details": {
       "provider": "Provider",
       "requestId": "ID richiesta"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Stop meeting",
+    "unsupportedTranscriptionMode": "This transcription mode is not supported for meetings. Choose a cloud provider or self-hosted service.",
+    "title": "Meetings",
+    "checking": "Checking system audio…",
+    "systemAvailable": "System audio is available. Headphones are recommended.",
+    "systemUnavailable": "System audio unavailable; recording can continue with microphone only.",
+    "micUnavailable": "Microphone unavailable; recording system audio only.",
+    "noAudio": "Neither microphone nor system audio is available.",
+    "start": "Start meeting",
+    "stop": "Stop recording",
+    "recording": "Recording",
+    "mic": "Microphone",
+    "system": "System audio",
+    "empty": "No meetings yet.",
+    "untitled": "Untitled meeting",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "copy": "Copy as Markdown",
+    "export": "Export .md",
+    "regenerate": "Regenerate summary",
+    "retry": "Retry",
+    "cancel": "Cancel processing",
+    "delete": "Delete",
+    "confirmDelete": "Delete this meeting and its audio?",
+    "select": "Select a meeting to see its summary and transcript.",
+    "settingsDescription": "Summaries use your configured cleanup provider, even when dictation cleanup is off.",
+    "keepAudio": "Keep meeting audio",
+    "keepAudioDescription": "Keep the recordings after successful processing. Audio is retained on failure for retry.",
+    "prompt": "Summary prompt",
+    "promptPlaceholder": "Leave empty for the default meeting prompt.",
+    "status": {
+      "recording": "Recording",
+      "transcribing": "Transcribing",
+      "segmenting": "Preparing audio",
+      "summarizing": "Summarizing",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "micStopped": "Microphone recording stopped.",
+    "systemStopped": "System audio stopped; other available tracks continue.",
+    "detection": {
+      "title": "Riunione rilevata in {{app}}",
+      "description": "Registrare questa riunione? Non viene registrato nulla finché non avvii.",
+      "start": "Avvia registrazione",
+      "dismiss": "Ignora",
+      "setting": "Rileva automaticamente le riunioni",
+      "settingDescription": "Quando Teams, Zoom, Webex o Skype usa il microfono, la pillola mobile propone di registrare. La registrazione parte solo dopo la tua conferma. Disponibile su Linux e Windows.",
+      "pillTitle": "Registrare la chiamata {{app}}?",
+      "pillStart": "Registra",
+      "endTitle": "Chiamata {{app}} terminata?",
+      "stop": "Interrompi registrazione",
+      "keepRecording": "Continua a registrare"
     }
   }
 }

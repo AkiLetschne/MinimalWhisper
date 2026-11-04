@@ -1,4 +1,15 @@
 import type { ModelDefinition } from "../models/ModelRegistry";
+export interface BatchMeeting {
+  id: string;
+  status: string;
+  createdAt: string;
+  title?: string;
+  error?: string | null;
+  errorKey?: string | null;
+  audioDurationSeconds?: number;
+  progress?: { stage: string; done: number; total: number };
+  note?: { content?: string; enhanced_content?: string } | null;
+}
 import type { ReasoningConfig } from "../services/BaseReasoningService";
 import type { PermissionGuideState, PermissionGuideAction } from "./permissionGuide";
 import type { TinfoilCatalogModel } from "../models/tinfoilModels";
@@ -2518,6 +2529,60 @@ declare global {
         source: "system" | "unavailable";
       }>;
       checkSystemAudioAccess?: () => Promise<SystemAudioAccessResult>;
+      requestStopBatchMeeting: () => Promise<boolean>;
+      onBatchMeetingStartRequested: (callback: () => void) => () => void;
+      batchMeetingRendererReady: () => void;
+      onBatchMeetingStopRequested: (callback: () => void) => () => void;
+      getBatchMeetingRecordingState: () => Promise<{ id: string; startedAt: number } | null>;
+      reportBatchMeetingRecording: (
+        state: { id: string; startedAt: number } | null
+      ) => Promise<void>;
+      onBatchMeetingRecordingState: (
+        callback: (state: { id: string; startedAt: number } | null) => void
+      ) => () => void;
+      onMeetingDetectionPrompt?: (
+        callback: (prompt: {
+          promptId: string;
+          appKey: string;
+          appName: string;
+          kind?: "start" | "end";
+        }) => void
+      ) => () => void;
+      onMeetingDetectionPromptCleared?: (
+        callback: (payload: { promptId: string }) => void
+      ) => () => void;
+      respondMeetingDetection?: (
+        promptId: string,
+        action: "start" | "stop" | "dismiss"
+      ) => Promise<{
+        success: boolean;
+        code?: string;
+        alreadyRecording?: boolean;
+        alreadyStopped?: boolean;
+      }>;
+      createMeeting: () => Promise<BatchMeeting>;
+      appendMeetingChunk: (
+        id: string,
+        track: "mic" | "system",
+        bytes: ArrayBuffer,
+        options?: { startedAt?: number }
+      ) => Promise<unknown>;
+      finishMeetingRecording: (
+        id: string,
+        options: { systemAudioAvailable: boolean; recordingError?: string }
+      ) => Promise<unknown>;
+      listMeetings: () => Promise<BatchMeeting[]>;
+      getMeeting: (id: string) => Promise<BatchMeeting>;
+      retryMeeting: (id: string) => Promise<unknown>;
+      regenerateMeetingSummary: (id: string) => Promise<unknown>;
+      deleteMeeting: (id: string) => Promise<unknown>;
+      cancelMeetingProcessing: (id: string) => Promise<unknown>;
+      startMeetingSystemAudio: (id: string) => Promise<unknown>;
+      stopMeetingSystemAudio: (id: string) => Promise<unknown>;
+      onMeetingProgress: (callback: (meeting: BatchMeeting) => void) => () => void;
+      onMeetingSystemError: (callback: (error: string) => void) => () => void;
+      onMeetingSystemLevel: (callback: (level: number) => void) => () => void;
+      exportMeeting: (id: string) => Promise<{ success: boolean }>;
       requestSystemAudioAccess?: () => Promise<SystemAudioAccessResult>;
       openMicrophoneSettings?: () => Promise<{ success: boolean; error?: string }>;
       openSoundInputSettings?: () => Promise<{ success: boolean; error?: string }>;

@@ -2250,8 +2250,8 @@
         "hyprlandUnbindDescription": "Unter Hyprland beansprucht OpenWhispr die ausgewählte Tastenkombination. Jede vorhandene Hyprland-Belegung mit derselben Tastenkombination wird aufgehoben, wenn OpenWhispr seine Tastenkombination registriert."
       },
       "meetingHotkey": {
-        "title": "Meeting-Modus-Hotkey",
-        "description": "Meeting-Modus starten und das Panel an den Bildschirmrand verschieben",
+        "title": "Meeting-Tastenkürzel",
+        "description": "Startet oder stoppt eine Meeting-Aufnahme von überall.",
         "layoutLabel": "Beim Auslösen per Hotkey öffnen in:",
         "layoutFullWidth": "Volle Breite",
         "layoutSidePanel": "Seitenleiste"
@@ -2972,7 +2972,8 @@
     "notSignedIn": "Nicht angemeldet",
     "chat": "Chat",
     "collapse": "Seitenleiste einklappen",
-    "expand": "Seitenleiste ausklappen"
+    "expand": "Seitenleiste ausklappen",
+    "meetings": "Meetings"
   },
   "workspaces": {
     "switcher": {
@@ -4875,6 +4876,61 @@
     "details": {
       "provider": "Anbieter",
       "requestId": "Anfrage-ID"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Meeting beenden",
+    "unsupportedTranscriptionMode": "Dieser Transkriptionsmodus wird für Meetings nicht unterstützt. Wähle einen Cloud-Anbieter oder einen selbst gehosteten Dienst.",
+    "title": "Meetings",
+    "checking": "Systemaudio wird geprüft…",
+    "systemAvailable": "Systemaudio ist verfügbar. Kopfhörer werden empfohlen.",
+    "systemUnavailable": "Systemaudio nicht verfügbar; die Aufnahme kann nur mit Mikrofon fortgesetzt werden.",
+    "micUnavailable": "Mikrofon nicht verfügbar; es wird nur Systemaudio aufgenommen.",
+    "noAudio": "Weder Mikrofon noch Systemaudio ist verfügbar.",
+    "start": "Meeting starten",
+    "stop": "Aufnahme stoppen",
+    "recording": "Aufnahme",
+    "mic": "Mikrofon",
+    "system": "Systemaudio",
+    "empty": "Noch keine Meetings.",
+    "untitled": "Meeting ohne Titel",
+    "summary": "Zusammenfassung",
+    "transcript": "Transkript",
+    "copy": "Als Markdown kopieren",
+    "export": "Als .md exportieren",
+    "regenerate": "Zusammenfassung neu erstellen",
+    "retry": "Erneut versuchen",
+    "cancel": "Verarbeitung abbrechen",
+    "delete": "Löschen",
+    "confirmDelete": "Dieses Meeting und seine Audiodaten löschen?",
+    "select": "Wähle ein Meeting für Zusammenfassung und Transkript.",
+    "settingsDescription": "Zusammenfassungen verwenden den konfigurierten Cleanup-Anbieter, auch wenn Diktat-Cleanup ausgeschaltet ist.",
+    "keepAudio": "Meeting-Audio behalten",
+    "keepAudioDescription": "Aufnahmen nach erfolgreicher Verarbeitung behalten. Bei Fehlern bleiben sie für einen erneuten Versuch erhalten.",
+    "prompt": "Zusammenfassungs-Prompt",
+    "promptPlaceholder": "Leer lassen für den Standard-Prompt.",
+    "status": {
+      "recording": "Aufnahme",
+      "transcribing": "Transkription",
+      "segmenting": "Audio wird vorbereitet",
+      "summarizing": "Zusammenfassung wird erstellt",
+      "done": "Fertig",
+      "failed": "Fehlgeschlagen"
+    },
+    "micStopped": "Mikrofonaufnahme wurde unterbrochen.",
+    "systemStopped": "Systemaudio wurde unterbrochen; andere verfügbare Spuren laufen weiter.",
+    "detection": {
+      "title": "Meeting in {{app}} erkannt",
+      "description": "Dieses Meeting aufnehmen? Ohne Bestätigung wird nichts aufgezeichnet.",
+      "start": "Aufnahme starten",
+      "dismiss": "Schließen",
+      "setting": "Meetings automatisch erkennen",
+      "settingDescription": "Wenn Teams, Zoom, Webex oder Skype das Mikrofon nutzt, bietet die schwebende Pill eine Aufnahme an, und sobald der Call vorbei ist, das Beenden. Ohne deine Bestätigung startet oder stoppt nichts. Verfügbar unter Linux und Windows.",
+      "pillTitle": "{{app}}-Call aufnehmen?",
+      "pillStart": "Aufnehmen",
+      "endTitle": "{{app}}-Call beendet?",
+      "stop": "Aufnahme beenden",
+      "keepRecording": "Weiter aufnehmen"
     }
   }
 }

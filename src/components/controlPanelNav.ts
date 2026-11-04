@@ -6,7 +6,14 @@ import { usePolicyStore } from "../stores/policyStore";
 import { SLIM_NAV } from "../config/slimFork";
 
 export type ControlPanelView =
-  "home" | "insights" | "chat" | "personal-notes" | "dictionary" | "upload" | "integrations";
+  | "home"
+  | "insights"
+  | "chat"
+  | "personal-notes"
+  | "dictionary"
+  | "upload"
+  | "integrations"
+  | "meetings";
 
 export interface ControlPanelNavItem {
   id: ControlPanelView;
@@ -26,6 +33,7 @@ export function useControlPanelNavItems(): ControlPanelNavItem[] {
 
   const items: ControlPanelNavItem[] = [
     { id: "home", label: t("sidebar.home"), icon: Home },
+    { id: "meetings", label: t("sidebar.meetings"), icon: NotebookPen },
     { id: "insights", label: t("sidebar.insights"), icon: BarChart3 },
     ...(agentAllowed
       ? [{ id: "chat" as const, label: t("sidebar.chat"), icon: MessageSquare }]

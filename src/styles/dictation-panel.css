@@ -694,3 +694,330 @@
     filter: none;
   }
 }
+
+/* Meeting recording: the compact listening pill in red, with a slow travelling
+   wave in place of live levels. Hover swaps the logo for a stop square, since a
+   click then stops the meeting. */
+.voice-pill-control[data-meeting-recording="true"] {
+  border-color: rgb(239 68 68 / 0.4);
+}
+
+.voice-pill-resting-wave[data-meeting="true"] {
+  color: #ef4444;
+}
+
+.voice-pill-resting-wave[data-meeting="true"] > span {
+  animation: voice-pill-meeting-wave 1.8s ease-in-out infinite;
+}
+
+@keyframes voice-pill-meeting-wave {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.voice-pill-meeting-stop {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #ef4444;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-pill-resting-wave[data-meeting="true"] > span {
+    animation: none;
+  }
+}
+
+/* Meeting detection prompt. It covers the idle pill exactly (same surface,
+   same logo) and widens out of it with the dictation grow curve, the way the
+   pill widens when recording starts. The logo's spot becomes the record
+   button. Exit runs the same steps backwards and ends identical to the pill,
+   so the real pill can take over without a visible swap.
+   MEETING_PROMPT_EXIT_MS (useMeetingDetectionPrompt.ts) covers the exit. */
+.meeting-prompt {
+  --meeting-prompt-grow: 300ms cubic-bezier(0.2, 0, 0, 1);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  interpolate-size: allow-keywords;
+  border: 1px solid var(--pill-border);
+  border-radius: 9999px;
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+  box-shadow: var(--shadow-card);
+  transition: width var(--meeting-prompt-grow) 120ms;
+}
+
+.meeting-prompt[data-align="left"] {
+  right: auto;
+  left: 0;
+  justify-content: flex-start;
+}
+
+.meeting-prompt[data-align="center"] {
+  right: auto;
+  left: 50%;
+  translate: -50% 0;
+  justify-content: center;
+}
+
+.meeting-prompt[data-phase="open"] {
+  width: auto;
+}
+
+.meeting-prompt[data-phase="closing"] {
+  pointer-events: none;
+  transition: width 260ms cubic-bezier(0.4, 0, 0.2, 1) 60ms;
+}
+
+/* The real pill hides underneath while the prompt owns its spot. */
+.voice-pill-position[data-meeting-prompt="start"] > .assistant-pill-presence {
+  visibility: hidden;
+}
+
+.meeting-prompt-row {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 100%;
+  padding-left: 14px;
+  white-space: nowrap;
+}
+
+.meeting-prompt[data-align="left"] .meeting-prompt-row {
+  padding-left: 0;
+  padding-right: 14px;
+}
+
+.meeting-prompt-label {
+  margin-right: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.meeting-prompt[data-align="left"] .meeting-prompt-label {
+  margin-right: 0;
+  margin-left: 10px;
+}
+
+/* Label and dismiss arrive once the width has settled and leave first. */
+.meeting-prompt-label,
+.meeting-prompt-dismiss {
+  opacity: 0;
+  transition: opacity 100ms ease-in;
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-label,
+.meeting-prompt[data-phase="open"] .meeting-prompt-dismiss {
+  opacity: 1;
+  transition: opacity 160ms ease-out 360ms;
+}
+
+.meeting-prompt-dismiss {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: color-mix(in srgb, var(--pill-fg) 70%, transparent);
+  background: rgb(255 255 255 / 0.08);
+  cursor: pointer;
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-dismiss:hover {
+  color: var(--pill-fg);
+  background: rgb(255 255 255 / 0.14);
+  transition:
+    background-color 120ms ease-out,
+    color 120ms ease-out;
+}
+
+/* 38px = the pill's inner box, so the logo lands exactly where the pill's
+   own logo sits. */
+.meeting-prompt-slot {
+  position: relative;
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.meeting-prompt-logo,
+.meeting-prompt-record {
+  position: absolute;
+  transition:
+    opacity 140ms ease-out,
+    scale 200ms cubic-bezier(0.2, 0, 0, 1),
+    border-color 120ms ease-out;
+}
+
+.meeting-prompt-logo {
+  display: inline-flex;
+  color: color-mix(in srgb, var(--pill-fg) 80%, transparent);
+}
+
+/* A camera-style record control: a light ring around a red core. Accepting
+   squares the core into the stop glyph the red meeting pill shows on hover
+   (.voice-pill-meeting-stop), so the button hands over to that state. */
+.meeting-prompt-record {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid color-mix(in srgb, var(--pill-fg) 82%, transparent);
+  border-radius: 9999px;
+  cursor: pointer;
+  opacity: 0;
+  scale: 0.5;
+}
+
+.meeting-prompt-record-core {
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: #e5484d;
+  transition:
+    width 200ms cubic-bezier(0.2, 0, 0, 1),
+    height 200ms cubic-bezier(0.2, 0, 0, 1),
+    border-radius 200ms cubic-bezier(0.2, 0, 0, 1),
+    background-color 120ms ease-out;
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-logo {
+  opacity: 0;
+  scale: 0.6;
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-record {
+  opacity: 1;
+  scale: 1;
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-record:hover {
+  border-color: var(--pill-fg);
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-record:hover .meeting-prompt-record-core {
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #ec5d61;
+}
+
+.meeting-prompt[data-leaving="start"] .meeting-prompt-record-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.meeting-prompt[data-phase="open"] .meeting-prompt-record:active,
+.meeting-prompt[data-phase="open"] .meeting-prompt-dismiss:active {
+  scale: 0.92;
+}
+
+.meeting-prompt-record:focus-visible,
+.meeting-prompt-dismiss:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--pill-fg) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* Closing: the record button turns back into the logo once the width is
+   nearly home. */
+.meeting-prompt[data-phase="closing"] .meeting-prompt-logo,
+.meeting-prompt[data-phase="closing"] .meeting-prompt-record {
+  transition-delay: 240ms;
+}
+
+/* Meeting end: grows out of the red meeting pill (98x36) instead of the idle
+   dot. Its content differs from that pill's, so it fades in over the pill
+   while widening and fades back out once it has shrunk onto it; the pill
+   stays visible underneath. The core starts as the stop glyph. */
+.meeting-prompt[data-kind="end"] {
+  width: 98px;
+  height: 36px;
+  border-color: rgb(239 68 68 / 0.4);
+  opacity: 0;
+  transition:
+    width var(--meeting-prompt-grow) 120ms,
+    opacity 140ms ease-out;
+}
+
+.meeting-prompt[data-kind="end"][data-phase="open"] {
+  width: auto;
+  opacity: 1;
+}
+
+.meeting-prompt[data-kind="end"][data-phase="closing"] {
+  opacity: 0;
+  transition:
+    width 260ms cubic-bezier(0.4, 0, 0.2, 1) 60ms,
+    opacity 120ms ease-in 300ms;
+}
+
+.meeting-prompt[data-kind="end"] .meeting-prompt-slot {
+  width: 34px;
+  height: 34px;
+}
+
+.meeting-prompt[data-kind="end"] .meeting-prompt-logo {
+  display: none;
+}
+
+.meeting-prompt[data-kind="end"] .meeting-prompt-record {
+  width: 26px;
+  height: 26px;
+}
+
+.meeting-prompt[data-kind="end"] .meeting-prompt-record-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.meeting-prompt[data-kind="end"][data-phase="open"]
+  .meeting-prompt-record:hover
+  .meeting-prompt-record-core {
+  width: 11px;
+  height: 11px;
+  border-radius: 2.5px;
+}
+
+.meeting-prompt[data-kind="end"][data-leaving="stop"] .meeting-prompt-record-core {
+  scale: 0;
+}
+
+.meeting-prompt[data-kind="end"] .meeting-prompt-record-core {
+  transition:
+    width 200ms cubic-bezier(0.2, 0, 0, 1),
+    height 200ms cubic-bezier(0.2, 0, 0, 1),
+    border-radius 200ms cubic-bezier(0.2, 0, 0, 1),
+    background-color 120ms ease-out,
+    scale 200ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meeting-prompt,
+  .meeting-prompt[data-phase="closing"],
+  .meeting-prompt *,
+  .meeting-prompt[data-phase] * {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

@@ -1453,10 +1453,11 @@ class WindowManager {
 
   async createControlPanelWindow(options) {
     if (this.controlPanelWindow && !this.controlPanelWindow.isDestroyed()) {
-      this.showControlPanel(options);
+      if (!options?.background) this.showControlPanel(options);
       return;
     }
 
+    this._controlPanelBackground = Boolean(options?.background);
     this.controlPanelWindow = new BrowserWindow(CONTROL_PANEL_CONFIG);
     this._onboardingRestoreBounds = null;
     this._onboardingWindowMode = null;
@@ -1470,9 +1471,11 @@ class WindowManager {
     // backstop if the renderer never gets that far — it loads but throws, a lazy
     // chunk fails, or auth/policy resolution never settles — so it must outlive
     // did-finish-load. Only a real show cancels it.
-    this._controlPanelVisibilityTimer = setTimeout(() => {
-      this._showControlPanel();
-    }, 10000);
+    if (!options?.background) {
+      this._controlPanelVisibilityTimer = setTimeout(() => {
+        this._showControlPanel();
+      }, 10000);
+    }
 
     this.controlPanelWindow.on("close", (event) => {
       if (!this.isQuitting) {
@@ -1792,7 +1795,7 @@ class WindowManager {
 
   _showControlPanel() {
     const win = this.controlPanelWindow;
-    if (!win || win.isDestroyed()) return;
+    if (!win || win.isDestroyed() || this._controlPanelBackground) return;
     // Cancel the backstop either way: once the window has been shown on purpose,
     // a later timer firing could pull it back out of the tray.
     this._clearControlPanelVisibilityTimer();
@@ -1809,6 +1812,7 @@ class WindowManager {
   // open panel, for openers that send the user to another app (joining a
   // meeting, the meeting hotkey mid-call): the panel updates behind it.
   showControlPanel({ activate = true } = {}) {
+    this._controlPanelBackground = false;
     const win = this.controlPanelWindow;
     if (!win || win.isDestroyed()) return;
     this._clearControlPanelVisibilityTimer();

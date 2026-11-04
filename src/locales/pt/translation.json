@@ -1935,8 +1935,8 @@
         "hyprlandUnbindDescription": "No Hyprland, o OpenWhispr reserva o atalho selecionado. Qualquer atalho existente do Hyprland que use a mesma combinação de teclas será desvinculado quando o OpenWhispr registar o atalho."
       },
       "meetingHotkey": {
-        "title": "Atalho modo reunião",
-        "description": "Iniciar modo reunião e posicionar o painel ao lado da tela",
+        "title": "Meeting hotkey",
+        "description": "Starts or stops a meeting recording from anywhere.",
         "layoutLabel": "Ao acionar pelo atalho, abrir em:",
         "layoutFullWidth": "Largura total",
         "layoutSidePanel": "Painel lateral"
@@ -3631,7 +3631,8 @@
     "notSignedIn": "Não conectado",
     "chat": "Chat",
     "collapse": "Recolher barra lateral",
-    "expand": "Expandir barra lateral"
+    "expand": "Expandir barra lateral",
+    "meetings": "Meetings"
   },
   "chat": {
     "newChat": "Novo chat",
@@ -4875,6 +4876,61 @@
     "details": {
       "provider": "Provedor",
       "requestId": "ID da solicitação"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Stop meeting",
+    "unsupportedTranscriptionMode": "This transcription mode is not supported for meetings. Choose a cloud provider or self-hosted service.",
+    "title": "Meetings",
+    "checking": "Checking system audio…",
+    "systemAvailable": "System audio is available. Headphones are recommended.",
+    "systemUnavailable": "System audio unavailable; recording can continue with microphone only.",
+    "micUnavailable": "Microphone unavailable; recording system audio only.",
+    "noAudio": "Neither microphone nor system audio is available.",
+    "start": "Start meeting",
+    "stop": "Stop recording",
+    "recording": "Recording",
+    "mic": "Microphone",
+    "system": "System audio",
+    "empty": "No meetings yet.",
+    "untitled": "Untitled meeting",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "copy": "Copy as Markdown",
+    "export": "Export .md",
+    "regenerate": "Regenerate summary",
+    "retry": "Retry",
+    "cancel": "Cancel processing",
+    "delete": "Delete",
+    "confirmDelete": "Delete this meeting and its audio?",
+    "select": "Select a meeting to see its summary and transcript.",
+    "settingsDescription": "Summaries use your configured cleanup provider, even when dictation cleanup is off.",
+    "keepAudio": "Keep meeting audio",
+    "keepAudioDescription": "Keep the recordings after successful processing. Audio is retained on failure for retry.",
+    "prompt": "Summary prompt",
+    "promptPlaceholder": "Leave empty for the default meeting prompt.",
+    "status": {
+      "recording": "Recording",
+      "transcribing": "Transcribing",
+      "segmenting": "Preparing audio",
+      "summarizing": "Summarizing",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "micStopped": "Microphone recording stopped.",
+    "systemStopped": "System audio stopped; other available tracks continue.",
+    "detection": {
+      "title": "Reunião detectada no {{app}}",
+      "description": "Gravar esta reunião? Nada é gravado até você iniciar.",
+      "start": "Iniciar gravação",
+      "dismiss": "Dispensar",
+      "setting": "Detectar reuniões automaticamente",
+      "settingDescription": "Quando o Teams, Zoom, Webex ou Skype usa o microfone, a pílula flutuante oferece a gravação. A gravação só começa após sua confirmação. Disponível no Linux e no Windows.",
+      "pillTitle": "Gravar chamada do {{app}}?",
+      "pillStart": "Gravar",
+      "endTitle": "Chamada do {{app}} encerrada?",
+      "stop": "Parar gravação",
+      "keepRecording": "Continuar gravando"
     }
   }
 }

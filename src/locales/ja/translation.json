@@ -1956,8 +1956,8 @@
         "hyprlandUnbindDescription": "Hyprland では、OpenWhispr が選択したショートカットを使用します。同じキーの組み合わせを使う既存の Hyprland バインドは、OpenWhispr がショートカットを登録すると解除されます。"
       },
       "meetingHotkey": {
-        "title": "ミーティングモードホットキー",
-        "description": "ミーティングモードを開始し、パネルを画面の横に配置する",
+        "title": "Meeting hotkey",
+        "description": "Starts or stops a meeting recording from anywhere.",
         "layoutLabel": "ホットキーで起動したときに開く:",
         "layoutFullWidth": "全幅",
         "layoutSidePanel": "サイドパネル"
@@ -3631,7 +3631,8 @@
     "notSignedIn": "未サインイン",
     "chat": "チャット",
     "collapse": "サイドバーを折りたたむ",
-    "expand": "サイドバーを展開"
+    "expand": "サイドバーを展開",
+    "meetings": "Meetings"
   },
   "chat": {
     "newChat": "新しいチャット",
@@ -4875,6 +4876,61 @@
     "details": {
       "provider": "プロバイダー",
       "requestId": "リクエストID"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Stop meeting",
+    "unsupportedTranscriptionMode": "This transcription mode is not supported for meetings. Choose a cloud provider or self-hosted service.",
+    "title": "Meetings",
+    "checking": "Checking system audio…",
+    "systemAvailable": "System audio is available. Headphones are recommended.",
+    "systemUnavailable": "System audio unavailable; recording can continue with microphone only.",
+    "micUnavailable": "Microphone unavailable; recording system audio only.",
+    "noAudio": "Neither microphone nor system audio is available.",
+    "start": "Start meeting",
+    "stop": "Stop recording",
+    "recording": "Recording",
+    "mic": "Microphone",
+    "system": "System audio",
+    "empty": "No meetings yet.",
+    "untitled": "Untitled meeting",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "copy": "Copy as Markdown",
+    "export": "Export .md",
+    "regenerate": "Regenerate summary",
+    "retry": "Retry",
+    "cancel": "Cancel processing",
+    "delete": "Delete",
+    "confirmDelete": "Delete this meeting and its audio?",
+    "select": "Select a meeting to see its summary and transcript.",
+    "settingsDescription": "Summaries use your configured cleanup provider, even when dictation cleanup is off.",
+    "keepAudio": "Keep meeting audio",
+    "keepAudioDescription": "Keep the recordings after successful processing. Audio is retained on failure for retry.",
+    "prompt": "Summary prompt",
+    "promptPlaceholder": "Leave empty for the default meeting prompt.",
+    "status": {
+      "recording": "Recording",
+      "transcribing": "Transcribing",
+      "segmenting": "Preparing audio",
+      "summarizing": "Summarizing",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "micStopped": "Microphone recording stopped.",
+    "systemStopped": "System audio stopped; other available tracks continue.",
+    "detection": {
+      "title": "{{app}} で会議を検出しました",
+      "description": "この会議を録音しますか？開始するまで何も録音されません。",
+      "start": "録音を開始",
+      "dismiss": "閉じる",
+      "setting": "会議を自動検出",
+      "settingDescription": "Teams、Zoom、Webex、Skype がマイクを使用すると、フローティングピルが録音を提案します。録音は確認後にのみ開始されます。Linux と Windows で利用できます。",
+      "pillTitle": "{{app}} の通話を録音しますか？",
+      "pillStart": "録音",
+      "endTitle": "{{app}} の通話は終了しましたか？",
+      "stop": "録音を停止",
+      "keepRecording": "録音を続ける"
     }
   }
 }

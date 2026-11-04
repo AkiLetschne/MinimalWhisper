@@ -20,7 +20,7 @@ function createManagedTranscriptionExecutor({
   return async function executeManagedTranscription(
     event,
     route,
-    { audioBuffer, fileName, contentType, prompt }
+    { audioBuffer, fileName, contentType, prompt, signal }
   ) {
     if (route?.provider !== "azure" || route?.context?.inferenceScope !== "transcription") {
       throw Object.assign(new Error("Managed transcription route is invalid"), {
@@ -55,7 +55,9 @@ function createManagedTranscriptionExecutor({
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
-      signal: AbortSignal.timeout(timeoutMs),
+      signal: signal
+        ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)])
+        : AbortSignal.timeout(timeoutMs),
     });
     if (!response.ok) {
       const errorText = await response.text();

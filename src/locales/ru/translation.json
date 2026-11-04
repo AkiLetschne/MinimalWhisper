@@ -1960,8 +1960,8 @@
         "hyprlandUnbindDescription": "В Hyprland OpenWhispr резервирует выбранное сочетание клавиш. Любая существующая привязка Hyprland, использующая ту же комбинацию, будет удалена, когда OpenWhispr зарегистрирует своё сочетание."
       },
       "meetingHotkey": {
-        "title": "Горячая клавиша режима встречи",
-        "description": "Запустить режим встречи и закрепить панель сбоку экрана",
+        "title": "Meeting hotkey",
+        "description": "Starts or stops a meeting recording from anywhere.",
         "layoutLabel": "При запуске горячей клавишей открывать в:",
         "layoutFullWidth": "Полная ширина",
         "layoutSidePanel": "Боковая панель"
@@ -3675,7 +3675,8 @@
     "notSignedIn": "Не авторизован",
     "chat": "Чат",
     "collapse": "Свернуть боковую панель",
-    "expand": "Развернуть боковую панель"
+    "expand": "Развернуть боковую панель",
+    "meetings": "Meetings"
   },
   "chat": {
     "newChat": "Новый чат",
@@ -4921,6 +4922,61 @@
     "details": {
       "provider": "Провайдер",
       "requestId": "ID запроса"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Stop meeting",
+    "unsupportedTranscriptionMode": "This transcription mode is not supported for meetings. Choose a cloud provider or self-hosted service.",
+    "title": "Meetings",
+    "checking": "Checking system audio…",
+    "systemAvailable": "System audio is available. Headphones are recommended.",
+    "systemUnavailable": "System audio unavailable; recording can continue with microphone only.",
+    "micUnavailable": "Microphone unavailable; recording system audio only.",
+    "noAudio": "Neither microphone nor system audio is available.",
+    "start": "Start meeting",
+    "stop": "Stop recording",
+    "recording": "Recording",
+    "mic": "Microphone",
+    "system": "System audio",
+    "empty": "No meetings yet.",
+    "untitled": "Untitled meeting",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "copy": "Copy as Markdown",
+    "export": "Export .md",
+    "regenerate": "Regenerate summary",
+    "retry": "Retry",
+    "cancel": "Cancel processing",
+    "delete": "Delete",
+    "confirmDelete": "Delete this meeting and its audio?",
+    "select": "Select a meeting to see its summary and transcript.",
+    "settingsDescription": "Summaries use your configured cleanup provider, even when dictation cleanup is off.",
+    "keepAudio": "Keep meeting audio",
+    "keepAudioDescription": "Keep the recordings after successful processing. Audio is retained on failure for retry.",
+    "prompt": "Summary prompt",
+    "promptPlaceholder": "Leave empty for the default meeting prompt.",
+    "status": {
+      "recording": "Recording",
+      "transcribing": "Transcribing",
+      "segmenting": "Preparing audio",
+      "summarizing": "Summarizing",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "micStopped": "Microphone recording stopped.",
+    "systemStopped": "System audio stopped; other available tracks continue.",
+    "detection": {
+      "title": "Обнаружена встреча в {{app}}",
+      "description": "Записать эту встречу? Ничего не записывается, пока вы не начнёте.",
+      "start": "Начать запись",
+      "dismiss": "Закрыть",
+      "setting": "Автоматически обнаруживать встречи",
+      "settingDescription": "Когда Teams, Zoom, Webex или Skype использует микрофон, плавающая кнопка предлагает начать запись. Запись начинается только после подтверждения. Доступно в Linux и Windows.",
+      "pillTitle": "Записать звонок {{app}}?",
+      "pillStart": "Записать",
+      "endTitle": "Звонок {{app}} завершён?",
+      "stop": "Остановить запись",
+      "keepRecording": "Продолжить запись"
     }
   }
 }

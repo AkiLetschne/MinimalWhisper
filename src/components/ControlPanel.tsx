@@ -50,16 +50,20 @@ import {
   useIsNarrowWindow,
   useMeetingRecordingStore,
 } from "../stores/meetingRecordingStore";
+import {
+  startBatchMeeting,
+  stopBatchMeeting,
+  useBatchMeetingRecording,
+} from "../stores/batchMeetingRecording";
 import ControlPanelSidebar from "./ControlPanelSidebar";
 import ControlPanelTopBar from "./ControlPanelTopBar";
 import { useControlPanelNavItems, type ControlPanelView } from "./controlPanelNav";
-import { SLIM_TOPBAR_SEARCH } from "../config/slimFork";
+import { SLIM_NAV, SLIM_TOPBAR_SEARCH } from "../config/slimFork";
 import {
   DEFAULT_INTEGRATIONS_SECTION,
   type IntegrationsSection,
 } from "./integrations/integrationsSections";
 import { navigateMeetingNotification } from "./meetingNotificationNavigation";
-import MeetingRecordingMount from "./MeetingRecordingMount";
 import MeetingRecordingPill from "./notes/MeetingRecordingPill";
 import NewNoteMenu from "./notes/NewNoteMenu";
 
@@ -74,7 +78,6 @@ import {
   navigateToContainer,
   useActiveNoteId,
   initializeNotes,
-  subscribeMeetingNotificationFolders,
 } from "../stores/noteStore";
 import { fetchProviders as fetchStreamingProviders } from "../stores/streamingProvidersStore";
 import {
@@ -108,6 +111,7 @@ const InviteTeammateDialog = React.lazy(() => import("./InviteTeammateDialog"));
 const PersonalNotesView = React.lazy(() => import("./notes/PersonalNotesView"));
 const InsightsView = React.lazy(() => import("./InsightsView"));
 const DictionaryView = React.lazy(() => import("./DictionaryView"));
+const MeetingsView = React.lazy(() => import("./MeetingsView"));
 const UploadAudioView = React.lazy(() => import("./notes/UploadAudioView"));
 const IntegrationsView = React.lazy(() => import("./IntegrationsView"));
 const ChatView = React.lazy(() => import("./chat/ChatView"));
@@ -120,7 +124,21 @@ interface ControlPanelProps {
 
 export default function ControlPanel({ initialSettingsSection }: ControlPanelProps = {}) {
   const { t } = useTranslation();
-  useEffect(subscribeMeetingNotificationFolders, []);
+  useEffect(
+    () =>
+      window.electronAPI.onBatchMeetingStopRequested(() => {
+        if (useBatchMeetingRecording.getState().id) void stopBatchMeeting();
+        else void window.electronAPI.reportBatchMeetingRecording(null);
+      }),
+    []
+  );
+  useEffect(() => {
+    const unsubscribe = window.electronAPI.onBatchMeetingStartRequested(() => {
+      void startBatchMeeting();
+    });
+    window.electronAPI.batchMeetingRendererReady();
+    return unsubscribe;
+  }, []);
   const history = useTranscriptions();
   const [isLoading, setIsLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(!!initialSettingsSection);
@@ -399,6 +417,8 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
   // A ref, not a per-run flag: StrictMode's remount must not cancel the first drain.
   const meetingNavigationMounted = useRef(false);
   useEffect(() => {
+    // The upstream notification flow opens the hidden realtime notes UI.
+    if (!(SLIM_NAV as readonly string[]).includes("personal-notes")) return;
     meetingNavigationMounted.current = true;
     const isCurrent = () => meetingNavigationMounted.current;
     const drain = async () => {
@@ -924,7 +944,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
 
   return (
     <div className="h-screen bg-surface-window flex flex-col">
-      <MeetingRecordingMount />
       <MeetingRecordingPill
         activeView={activeView}
         activeNoteId={activeNoteId}
@@ -1246,6 +1265,11 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
                     setActiveView("integrations");
                   }}
                 />
+              )}
+              {activeView === "meetings" && (
+                <Suspense fallback={null}>
+                  <MeetingsView />
+                </Suspense>
               )}
               {activeView === "insights" && (
                 <Suspense fallback={null}>

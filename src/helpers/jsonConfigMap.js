@@ -44,7 +44,13 @@ export function toSlimConfig(state) {
       apiKey: keyFor(state.cleanupProvider, state, "cleanup"),
       prompt: state.customPrompts?.cleanup || "",
     },
+    meeting: {
+      summaryPrompt: state.meetingSummaryPrompt,
+      keepAudio: state.meetingKeepAudio,
+      detect: state.meetingAutoDetect,
+    },
     hotkey: state.dictationKey,
+    meetingHotkey: state.meetingKey,
     dictionary: state.customDictionary,
     theme: state.theme,
     uiLanguage: state.uiLanguage,

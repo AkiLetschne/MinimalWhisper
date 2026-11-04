@@ -768,7 +768,9 @@ function initializeDeferredManagers() {
   googleCalendarManager.start();
   microsoftCalendarManager.start();
   appleCalendarManager.start();
-  meetingDetectionEngine.start();
+  // The upstream note-based meeting detection stays off in the batch-only fork;
+  // its batch counterpart only suggests a recording in the floating pill.
+  ipcHandlers?.batchMeetingDetector?.start();
 }
 
 app.on("open-url", (event, url) => {
@@ -1342,11 +1344,24 @@ async function startApp() {
   const meetingHotkeyCallback = () => {
     if (!isMeetingPress()) return;
     debugLogger.info("Meeting hotkey triggered", {}, "meeting");
-    // Usually pressed mid-call: an open panel updates behind the meeting app.
-    windowManager.startManualMeeting({ activate: false });
+    void windowManager.toggleBatchMeeting();
   };
 
-  const savedMeetingKey = environmentManager.getMeetingKey?.() || "";
+  let configuredMeetingKey;
+  try {
+    configuredMeetingKey = jsonConfigFile.readJsonConfig().data?.meetingHotkey;
+  } catch (error) {
+    debugLogger.warn(
+      "Failed to read meeting hotkey from JSON config",
+      { error: error.message },
+      "meeting"
+    );
+  }
+  const savedMeetingKey =
+    typeof configuredMeetingKey === "string"
+      ? configuredMeetingKey
+      : environmentManager.getMeetingKey?.() || "";
+  environmentManager.saveMeetingKey(savedMeetingKey);
   if (savedMeetingKey) {
     const result = await hotkeyManager.registerSlot(
       "meeting",
@@ -1890,7 +1905,7 @@ async function startApp() {
       } else if (hotkeyManager.slotHasHotkey("translation", key)) {
         windowManager.sendToggleTranslation();
       } else if (hotkeyManager.slotHasHotkey("meeting", key)) {
-        windowManager.startManualMeeting({ activate: false });
+        meetingHotkeyCallback();
       }
     };
 
@@ -2151,6 +2166,7 @@ function performSyncTeardown() {
   if (windowsKeyManager) windowsKeyManager.stop();
   if (linuxKeyManager) linuxKeyManager.stop();
   if (meetingDetectionEngine) meetingDetectionEngine.stop();
+  ipcHandlers?.batchMeetingDetector?.stop();
   if (googleCalendarManager) googleCalendarManager.stop();
   if (microsoftCalendarManager) microsoftCalendarManager.stop();
   if (appleCalendarManager) appleCalendarManager.stop();

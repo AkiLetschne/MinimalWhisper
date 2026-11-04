@@ -2250,8 +2250,8 @@
         "hyprlandUnbindDescription": "Sous Hyprland, OpenWhispr réserve le raccourci sélectionné. Tout raccourci Hyprland existant utilisant la même combinaison de touches sera supprimé quand OpenWhispr enregistrera son raccourci."
       },
       "meetingHotkey": {
-        "title": "Raccourci mode réunion",
-        "description": "Démarrer le mode réunion et ancrer le panneau sur le côté de l'écran",
+        "title": "Meeting hotkey",
+        "description": "Starts or stops a meeting recording from anywhere.",
         "layoutLabel": "Lors du déclenchement par raccourci, ouvrir en :",
         "layoutFullWidth": "Pleine largeur",
         "layoutSidePanel": "Panneau latéral"
@@ -2972,7 +2972,8 @@
     "notSignedIn": "Non connecté",
     "chat": "Chat",
     "collapse": "Réduire la barre latérale",
-    "expand": "Développer la barre latérale"
+    "expand": "Développer la barre latérale",
+    "meetings": "Meetings"
   },
   "workspaces": {
     "switcher": {
@@ -4875,6 +4876,61 @@
     "details": {
       "provider": "Fournisseur",
       "requestId": "ID de requête"
+    }
+  },
+  "meetings": {
+    "dotTooltip": "Stop meeting",
+    "unsupportedTranscriptionMode": "This transcription mode is not supported for meetings. Choose a cloud provider or self-hosted service.",
+    "title": "Meetings",
+    "checking": "Checking system audio…",
+    "systemAvailable": "System audio is available. Headphones are recommended.",
+    "systemUnavailable": "System audio unavailable; recording can continue with microphone only.",
+    "micUnavailable": "Microphone unavailable; recording system audio only.",
+    "noAudio": "Neither microphone nor system audio is available.",
+    "start": "Start meeting",
+    "stop": "Stop recording",
+    "recording": "Recording",
+    "mic": "Microphone",
+    "system": "System audio",
+    "empty": "No meetings yet.",
+    "untitled": "Untitled meeting",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "copy": "Copy as Markdown",
+    "export": "Export .md",
+    "regenerate": "Regenerate summary",
+    "retry": "Retry",
+    "cancel": "Cancel processing",
+    "delete": "Delete",
+    "confirmDelete": "Delete this meeting and its audio?",
+    "select": "Select a meeting to see its summary and transcript.",
+    "settingsDescription": "Summaries use your configured cleanup provider, even when dictation cleanup is off.",
+    "keepAudio": "Keep meeting audio",
+    "keepAudioDescription": "Keep the recordings after successful processing. Audio is retained on failure for retry.",
+    "prompt": "Summary prompt",
+    "promptPlaceholder": "Leave empty for the default meeting prompt.",
+    "status": {
+      "recording": "Recording",
+      "transcribing": "Transcribing",
+      "segmenting": "Preparing audio",
+      "summarizing": "Summarizing",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "micStopped": "Microphone recording stopped.",
+    "systemStopped": "System audio stopped; other available tracks continue.",
+    "detection": {
+      "title": "Réunion détectée dans {{app}}",
+      "description": "Enregistrer cette réunion ? Rien n’est enregistré tant que vous ne lancez pas l’enregistrement.",
+      "start": "Démarrer l’enregistrement",
+      "dismiss": "Ignorer",
+      "setting": "Détecter automatiquement les réunions",
+      "settingDescription": "Lorsque Teams, Zoom, Webex ou Skype utilise le microphone, la pastille flottante propose d’enregistrer. L’enregistrement ne démarre qu’après votre confirmation. Disponible sous Linux et Windows.",
+      "pillTitle": "Enregistrer l’appel {{app}} ?",
+      "pillStart": "Enregistrer",
+      "endTitle": "Appel {{app}} terminé ?",
+      "stop": "Arrêter l’enregistrement",
+      "keepRecording": "Continuer l’enregistrement"
     }
   }
 }

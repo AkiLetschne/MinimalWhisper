@@ -173,9 +173,6 @@ class LinuxPortalAudioManager {
 
       child.on("exit", (code, signal) => {
         const wasStopping = this.isStopping;
-        if (this.process === child) {
-          this.process = null;
-        }
 
         if (!settled) {
           finish(
@@ -194,6 +191,9 @@ class LinuxPortalAudioManager {
             )
           );
         }
+      });
+      child.once("close", () => {
+        if (this.process === child && !this.isStopping) this.process = null;
       });
     });
   }
@@ -215,7 +215,7 @@ class LinuxPortalAudioManager {
         }
       }, STOP_TIMEOUT_MS);
 
-      child.once("exit", () => {
+      child.once("close", () => {
         clearTimeout(timeout);
         resolve();
       });

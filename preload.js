@@ -818,6 +818,58 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("transcribe-audio-file-cloud", filePath, options),
   cancelUploadTranscription: (requestId) =>
     ipcRenderer.invoke("cancel-upload-transcription", requestId),
+  getBatchMeetingRecordingState: () => ipcRenderer.invoke("meeting-batch-recording-state"),
+  requestStopBatchMeeting: () => ipcRenderer.invoke("meeting-batch-request-stop"),
+  onBatchMeetingStartRequested: registerListener(
+    "meeting-batch-start-requested",
+    (callback) => () => callback()
+  ),
+  batchMeetingRendererReady: () => ipcRenderer.send("meeting-batch-renderer-ready"),
+  onBatchMeetingStopRequested: registerListener(
+    "meeting-batch-stop-requested",
+    (callback) => () => callback()
+  ),
+  reportBatchMeetingRecording: (state) =>
+    ipcRenderer.invoke("meeting-batch-report-recording", state),
+  onBatchMeetingRecordingState: registerListener(
+    "meeting-batch-recording-state",
+    (callback) => (_event, state) => callback(state)
+  ),
+  onMeetingDetectionPrompt: registerListener(
+    "meeting-detection-prompt",
+    (callback) => (_event, prompt) => callback(prompt)
+  ),
+  onMeetingDetectionPromptCleared: registerListener(
+    "meeting-detection-prompt-cleared",
+    (callback) => (_event, payload) => callback(payload)
+  ),
+  respondMeetingDetection: (promptId, action) =>
+    ipcRenderer.invoke("meeting-detection-respond", promptId, action),
+  createMeeting: () => ipcRenderer.invoke("meeting-batch-create"),
+  appendMeetingChunk: (id, track, bytes, options) =>
+    ipcRenderer.invoke("meeting-batch-append", id, track, bytes, options),
+  startMeetingSystemAudio: (id) => ipcRenderer.invoke("meeting-batch-start-system", id),
+  stopMeetingSystemAudio: (id) => ipcRenderer.invoke("meeting-batch-stop-system", id),
+  onMeetingSystemError: registerListener(
+    "meeting-batch-system-error",
+    (callback) => (_event, error) => callback(error)
+  ),
+  onMeetingSystemLevel: registerListener(
+    "meeting-batch-system-level",
+    (callback) => (_event, level) => callback(level)
+  ),
+  exportMeeting: (id) => ipcRenderer.invoke("meeting-batch-export", id),
+  finishMeetingRecording: (id, options) => ipcRenderer.invoke("meeting-batch-finish", id, options),
+  listMeetings: () => ipcRenderer.invoke("meeting-batch-list"),
+  getMeeting: (id) => ipcRenderer.invoke("meeting-batch-get", id),
+  retryMeeting: (id) => ipcRenderer.invoke("meeting-batch-retry", id),
+  regenerateMeetingSummary: (id) => ipcRenderer.invoke("meeting-batch-regenerate", id),
+  deleteMeeting: (id) => ipcRenderer.invoke("meeting-batch-delete", id),
+  cancelMeetingProcessing: (id) => ipcRenderer.invoke("meeting-batch-cancel", id),
+  onMeetingProgress: registerListener(
+    "meeting-batch-progress",
+    (callback) => (_event, meta) => callback(meta)
+  ),
   transcribeAudioFileByok: (options) => ipcRenderer.invoke("transcribe-audio-file-byok", options),
   onUploadTranscriptionProgress: registerListener(
     "upload-transcription-progress",

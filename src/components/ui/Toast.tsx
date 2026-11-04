@@ -443,6 +443,7 @@ const Toast: React.FC<
           ? "opacity-0 translate-x-2 rtl:-translate-x-2 scale-[0.98]"
           : "toast-enter opacity-100 translate-x-0 scale-100"
       )}
+      role={isDestructive ? "alert" : "status"}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -533,12 +534,13 @@ const Toast: React.FC<
             "bg-white/10 backdrop-blur-sm border border-white/10",
             "text-white/70 hover:text-white hover:bg-white/20",
             "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
+            "group-focus-within:opacity-100 group-focus-within:scale-100",
             "transition-all duration-150",
             "focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
           )}
         >
-          <X className="size-3" />
-          <span className="sr-only">Close</span>
+          <X className="size-3" aria-hidden="true" />
+          <span className="sr-only">{t("common.close")}</span>
         </button>
       )}
 

@@ -888,6 +888,12 @@ export interface SettingsState
     ThemeSettings,
     ChatAgentSettings {
   isSignedIn: boolean;
+  meetingSummaryPrompt: string;
+  meetingKeepAudio: boolean;
+  meetingAutoDetect: boolean;
+  setMeetingSummaryPrompt: (value: string) => void;
+  setMeetingKeepAudio: (value: boolean) => void;
+  setMeetingAutoDetect: (value: boolean) => void;
   audioCuesEnabled: boolean;
   pauseMediaOnDictation: boolean;
   floatingIconAutoHide: boolean;
@@ -1532,6 +1538,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   cortiEnvironment: readString("cortiEnvironment", "us"),
   cortiTenant: readString("cortiTenant", "base"),
   customDictionary: readStringArray("customDictionary", []),
+  meetingSummaryPrompt: readString("meetingSummaryPrompt", ""),
+  meetingKeepAudio: readBoolean("meetingKeepAudio", false),
+  meetingAutoDetect: readBoolean("meetingAutoDetect", true),
   snippets: (() => {
     try {
       const parsed = JSON.parse(readString("snippets", "[]"));
@@ -2085,6 +2094,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   setUseDictationAgent: createBooleanSetter("useDictationAgent"),
   setCleanupProvider: createStringSetter("cleanupProvider"),
   setCleanupModel: createStringSetter("cleanupModel"),
+  setMeetingSummaryPrompt: createStringSetter("meetingSummaryPrompt"),
+  setMeetingKeepAudio: createBooleanSetter("meetingKeepAudio"),
+  setMeetingAutoDetect: createBooleanSetter("meetingAutoDetect"),
 
   // Replaces the whole dictionary: anything absent from `words` is deleted.
   // Editing specific words wants updateCustomDictionary instead (#1295).

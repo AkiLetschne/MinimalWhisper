@@ -120,10 +120,21 @@ Custom/LiteLLM STT does not send the Whisper `prompt`; Groq and OpenAI still do.
 
 ## Scope
 
-The UI covers dictation, history, dictionary and STT/cleanup settings
-(`src/components/MinimalSettings.tsx`). Notes, meetings, chat, the voice assistant, cloud
+The UI covers dictation, history, dictionary, meetings and STT/cleanup settings
+(`src/components/MinimalSettings.tsx`). Notes, chat, the voice assistant, cloud
 accounts, local-model controls and auto-updates are hidden or switched off. The current
 settings UI uses API providers for both transcription and cleanup.
+
+Meetings record the microphone and available system audio as separate tracks, then transcribe
+them in batches with the configured STT provider and summarize with the configured cleanup
+model, even when dictation cleanup is disabled. Audio and transcripts are sent to those
+providers; review their privacy policies. Audio is removed after successful processing by
+default and retained on failure for retry; the Meetings settings can retain it. Headphones
+are recommended: the microphone may also pick up speakers, and there is no cancellation
+between the tracks. Meeting summaries support OpenAI, Groq, OpenRouter, xAI, Mistral, custom
+OpenAI-compatible endpoints and self-hosted OpenAI-compatible endpoints. Other cleanup
+providers are not supported for summaries; select a supported provider and retry if a
+summary fails.
 
 Shared upstream code, dependencies and build scripts remain in the tree, including
 local-model infrastructure. Some startup and packaging scripts still download upstream
@@ -140,3 +151,7 @@ MIT-licensed as well; see `LICENSE`. Bundled Noto Sans fonts are under the SIL O
 License (`src/assets/fonts/NotoSans-OFL.txt`).
 
 Minimal Whispr is not affiliated with or endorsed by OpenWhispr.
+
+### Meeting shortcut
+
+Set or clear the **Meeting hotkey** in Settings → Hotkeys to start or stop a batch meeting recording. While a meeting is recording, the dot expands into the compact listening pill with a slow red wave (hovering shows a stop square); clicking it then stops the meeting. The dictation hotkey keeps working during a meeting, and while you dictate the dot behaves as usual.

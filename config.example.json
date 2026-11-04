@@ -15,7 +15,9 @@
     "apiKey": "",
     "prompt": ""
   },
+  "meeting": { "summaryPrompt": "", "keepAudio": false, "detect": true },
   "hotkey": "F8",
+  "meetingHotkey": "",
   "dictionary": [],
   "theme": "auto",
   "uiLanguage": "de",

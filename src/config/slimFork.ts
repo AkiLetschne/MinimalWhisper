@@ -1,7 +1,7 @@
 /** What this fork keeps. Everything else stays in the tree but is hidden. */
 export const APP_NAME = "Minimal Whispr";
 
-export const SLIM_NAV = ["home", "dictionary"] as const;
+export const SLIM_NAV = ["home", "dictionary", "meetings"] as const;
 
 export const SLIM_SETTINGS = [
   "general",

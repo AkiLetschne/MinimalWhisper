@@ -210,7 +210,14 @@ function GeneralSection() {
 
 function HotkeySection() {
   const { t } = useTranslation();
-  const { dictationKey, setDictationKey, activationMode, setActivationMode } = useSettings();
+  const {
+    dictationKey,
+    setDictationKey,
+    meetingKey,
+    setMeetingKey,
+    activationMode,
+    setActivationMode,
+  } = useSettings();
   const { alertDialog, showAlertDialog, hideAlertDialog } = useDialogs();
   const { registerHotkey, isRegistering } = useHotkeyRegistration({
     onSuccess: setDictationKey,
@@ -221,7 +228,41 @@ function HotkeySection() {
   const { isUsingNativeShortcut, pushToTalkUnavailableReason, linuxInputAccessDenied } =
     useHotkeyModeInfo("settings", dictationKey);
   const isLinux = getCachedPlatform() === "linux";
-  const validate = useCallback((hotkey: string) => validateHotkeyForSlot(hotkey, {}, t), [t]);
+  const meetingRegisterFn = useCallback(
+    async (hotkey: string) =>
+      (await window.electronAPI?.registerMeetingHotkey?.(hotkey)) ?? { success: false },
+    []
+  );
+  const { registerHotkey: registerMeeting, isRegistering: isMeetingRegistering } =
+    useHotkeyRegistration({
+      onSuccess: setMeetingKey,
+      showSuccessToast: false,
+      showErrorToast: true,
+      showAlert: showAlertDialog,
+      registerFn: meetingRegisterFn,
+    });
+  const clearMeeting = async () => {
+    const result = await meetingRegisterFn("");
+    if (!result.success) {
+      showAlertDialog({
+        title: t("hooks.hotkeyRegistration.titles.notRegistered"),
+        description: result.message || t("hooks.hotkeyRegistration.errors.couldNotRegister"),
+      });
+      return false;
+    }
+    setMeetingKey("");
+    return true;
+  };
+  const validate = useCallback(
+    (hotkey: string) =>
+      validateHotkeyForSlot(hotkey, { "settingsPage.general.meetingHotkey.title": meetingKey }, t),
+    [meetingKey, t]
+  );
+  const validateMeeting = useCallback(
+    (hotkey: string) =>
+      validateHotkeyForSlot(hotkey, { "settingsPage.general.hotkey.title": dictationKey }, t),
+    [dictationKey, t]
+  );
 
   return (
     <div className="space-y-6">
@@ -258,6 +299,24 @@ function HotkeySection() {
               )}
             </SettingsPanelRow>
           )}
+        </SettingsPanel>
+      </div>
+      <div>
+        <SectionHeader
+          title={t("settingsPage.general.meetingHotkey.title")}
+          description={t("settingsPage.general.meetingHotkey.description")}
+        />
+        <SettingsPanel>
+          <SettingsPanelRow>
+            <HotkeyListInput
+              value={meetingKey}
+              onChange={registerMeeting}
+              onClear={clearMeeting}
+              validate={validateMeeting}
+              disabled={isMeetingRegistering}
+              maxHotkeys={isUsingNativeShortcut ? 1 : undefined}
+            />
+          </SettingsPanelRow>
         </SettingsPanel>
       </div>
       <AlertDialog
@@ -311,11 +370,55 @@ function TranscriptionSection() {
 
 function CleanupSection() {
   const { useCleanupModel, updateCleanupSettings } = useSettings();
+  const { t } = useTranslation();
+  const meetingSummaryPrompt = useSettingsStore((s) => s.meetingSummaryPrompt);
+  const meetingKeepAudio = useSettingsStore((s) => s.meetingKeepAudio);
+  const setMeetingSummaryPrompt = useSettingsStore((s) => s.setMeetingSummaryPrompt);
+  const setMeetingKeepAudio = useSettingsStore((s) => s.setMeetingKeepAudio);
+  const meetingAutoDetect = useSettingsStore((s) => s.meetingAutoDetect);
+  const setMeetingAutoDetect = useSettingsStore((s) => s.setMeetingAutoDetect);
 
   useEffect(ensureProviderMode, []);
 
   return (
     <div className="space-y-6">
+      <div>
+        <SectionHeader
+          title={t("meetings.title")}
+          description={t("meetings.settingsDescription")}
+        />
+        <SettingsPanel>
+          <SettingsPanelRow>
+            <SettingsRow
+              label={t("meetings.detection.setting")}
+              description={t("meetings.detection.settingDescription")}
+            >
+              <Toggle checked={meetingAutoDetect} onChange={setMeetingAutoDetect} />
+            </SettingsRow>
+          </SettingsPanelRow>
+          <SettingsPanelRow>
+            <SettingsRow
+              label={t("meetings.keepAudio")}
+              description={t("meetings.keepAudioDescription")}
+            >
+              <Toggle checked={meetingKeepAudio} onChange={setMeetingKeepAudio} />
+            </SettingsRow>
+          </SettingsPanelRow>
+          <SettingsPanelRow>
+            <label className="block text-sm" htmlFor="meeting-summary-prompt">
+              {t("meetings.prompt")}
+            </label>
+            <textarea
+              id="meeting-summary-prompt"
+              className="mt-2 w-full rounded-md border border-border bg-background p-2 text-sm"
+              rows={4}
+              value={meetingSummaryPrompt}
+              onChange={(event) => setMeetingSummaryPrompt(event.target.value)}
+              placeholder={t("meetings.promptPlaceholder")}
+            />
+          </SettingsPanelRow>
+        </SettingsPanel>
+      </div>
       <div>
         <SectionHeader
           title="Cleanup"

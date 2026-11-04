@@ -12,6 +12,7 @@ import { useOnboardingAssistantDemo } from "./hooks/useOnboardingAssistantDemo";
 import { useLiveTranscriptPanel } from "./hooks/useLiveTranscriptPanel";
 import { useMainWindowSizeOwner } from "./hooks/useMainWindowSizeOwner";
 import { useMainProcessNotifications } from "./hooks/useMainProcessNotifications";
+import { useMeetingDetectionPrompt } from "./hooks/useMeetingDetectionPrompt";
 import { useListeningEntrancePhase } from "./hooks/useListeningEntrancePhase";
 import { useWindowResizeCompensation } from "./hooks/useWindowResizeCompensation";
 import { useSettingsStore } from "./stores/settingsStore";
@@ -25,6 +26,7 @@ import { VoiceModePanelCore } from "./components/dictation/VoiceModePanelCore";
 import { PillTooltip } from "./components/dictation/PillTooltip";
 import { PillCommandMenu } from "./components/dictation/PillCommandMenu";
 import { LiquidCancelButton } from "./components/dictation/LiquidCancelButton";
+import { MeetingPromptCapsule } from "./components/dictation/MeetingPromptCapsule";
 import AssistantNoteUndoListener from "./components/notes/AssistantNoteUndoListener";
 import { createMainWindowResizeCoordinator } from "./utils/mainWindowResizeCoordinator";
 import {
@@ -61,11 +63,35 @@ const UNMOUNTED_RESIZE = {
 
 export default function App() {
   const [isHovered, setIsHovered] = useState(false);
+  const [meetingRecording, setMeetingRecording] = useState(null);
+  useEffect(() => {
+    let active = true;
+    let updated = false;
+    const unsubscribe = window.electronAPI?.onBatchMeetingRecordingState?.((state) => {
+      updated = true;
+      if (active) setMeetingRecording(state);
+    });
+    window.electronAPI
+      ?.getBatchMeetingRecordingState?.()
+      .then((state) => {
+        if (active && !updated) setMeetingRecording(state);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+      unsubscribe?.();
+    };
+  }, []);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   const buttonRef = useRef(null);
   const pillPresenceRef = useRef(null);
-  const { toast, dismiss, toastCount, dictationErrorActionCount, dismissByPresentation } =
-    useToast();
+  const {
+    toast,
+    dismiss,
+    toastCount: notificationCount,
+    dictationErrorActionCount,
+    dismissByPresentation,
+  } = useToast();
   const { t } = useTranslation();
   const { hotkey } = useHotkey();
   const { isDragging, handleMouseDown, handleMouseUp } = useWindowDrag();
@@ -117,6 +143,13 @@ export default function App() {
 
   useWindowResizeCompensation();
   useMainProcessNotifications({ toast, dismiss, t });
+  const { prompt: meetingPrompt, respond: respondMeetingPrompt } = useMeetingDetectionPrompt();
+  const meetingPromptRef = useRef(null);
+  // Toasts capture the whole window; the meeting prompt only borrows the
+  // roomier window size (and keeps auto-hide away), while clicks outside its
+  // own capsule still reach the apps underneath.
+  const toastCount = notificationCount;
+  const windowToastCount = notificationCount + (meetingPrompt ? 1 : 0);
 
   const agentAllowed = usePolicyStore(isAgentAllowed);
   // Both allowances fail closed while the policy is loading or its fetch failed,
@@ -323,7 +356,7 @@ export default function App() {
   const { dictationErrorPillHandoffActive, panelReturnResizeActive } = useMainWindowSizeOwner({
     requestMainWindowSize,
     dictationErrorActionCount,
-    toastCount,
+    toastCount: windowToastCount,
     isCommandMenuOpen,
     isCompactPill: windowFitsCompactPill,
     isDictationActive: isRecording || isVisuallyProcessing,
@@ -416,9 +449,10 @@ export default function App() {
 
     if (
       floatingIconAutoHide &&
+      !meetingRecording &&
       !isRecording &&
       !isVisuallyProcessing &&
-      toastCount === 0 &&
+      windowToastCount === 0 &&
       !dictationErrorPillHandoffActive &&
       !assistant.mounted &&
       !liveTranscript.mounted
@@ -429,15 +463,19 @@ export default function App() {
       }, 500);
     } else if (!floatingIconAutoHide && prevAutoHideRef.current) {
       window.electronAPI?.showDictationPanel?.();
+    } else if (floatingIconAutoHide && meetingRecording) {
+      // The meeting indicator and its stop control live on the dot.
+      window.electronAPI?.showDictationPanel?.();
     }
 
     prevAutoHideRef.current = floatingIconAutoHide;
     return () => clearTimeout(hideTimeout);
   }, [
+    meetingRecording,
     isRecording,
     isVisuallyProcessing,
     floatingIconAutoHide,
-    toastCount,
+    windowToastCount,
     dictationErrorPillHandoffActive,
     assistant.mounted,
     liveTranscript.mounted,
@@ -549,6 +587,10 @@ export default function App() {
     : VOICE_PILL_FOOTPRINT.idle;
   const activateVoicePill = () => {
     if (!pillIsInteractive) return;
+    if (meetingIndicatorActive) {
+      if (!hasDragged) void window.electronAPI?.requestStopBatchMeeting?.();
+      return;
+    }
     if (canReopenLiveTranscript) {
       liveTranscript.reopen();
       return;
@@ -589,6 +631,13 @@ export default function App() {
       : listeningEntrance.activeState ||
         voiceActivity.activeState ||
         (assistant.open ? (isHovered ? "hover" : "idle") : micState);
+  // While a meeting records and dictation is idle, the dot itself is the
+  // meeting indicator and a click stops the meeting. The hotkey still dictates.
+  const meetingIndicatorActive =
+    Boolean(meetingRecording) &&
+    !anyPanelMounted &&
+    (commonPillState === "idle" || commonPillState === "hover");
+  const meetingTooltip = meetingIndicatorActive ? t("meetings.dotTooltip") : null;
   const voicePillDock = resolveVoicePillDock({
     liveTranscriptOpen: liveTranscript.open,
     liveTranscriptEntrancePhase: liveTranscript.entrancePhase,
@@ -628,10 +677,11 @@ export default function App() {
     hasLiveActivity: pillHasLiveActivity,
   });
 
+  const meetingPromptShown = Boolean(meetingPrompt) && !anyPanelMounted;
   useLinuxPillInteractivity({
-    pillRef: pillPresenceRef,
+    pillRef: meetingPromptShown ? meetingPromptRef : pillPresenceRef,
     captureWindow: isCommandMenuOpen || toastCount > 0 || anyPanelMounted || isDragging,
-    pillInteractive: pillIsInteractive && !pillVisuallySuppressed,
+    pillInteractive: meetingPromptShown || (pillIsInteractive && !pillVisuallySuppressed),
   });
 
   return (
@@ -645,6 +695,7 @@ export default function App() {
           "--voice-pill-travel-duration": `${voicePillTravelDuration}ms`,
         }}
         data-dictation-error-suppressed={dictationErrorSuppressesPill || undefined}
+        data-meeting-prompt={meetingPrompt && !anyPanelMounted ? meetingPrompt.kind : undefined}
         data-assistant-actions-suppressed={assistantActionsSuppressPill || undefined}
         aria-hidden={pillVisuallySuppressed || undefined}
       >
@@ -671,7 +722,10 @@ export default function App() {
           }}
         >
           <PillTooltip
-            content={canReopenLiveTranscript ? t("transcriptionPreview.label") : micTooltip}
+            content={
+              meetingTooltip ??
+              (canReopenLiveTranscript ? t("transcriptionPreview.label") : micTooltip)
+            }
             disabled={anyPanelMounted}
             align={voicePillPopoverAlign}
           >
@@ -679,6 +733,7 @@ export default function App() {
               ref={buttonRef}
               variant={anyPanelOpen ? "panel" : "floating"}
               state={commonPillState}
+              meetingRecording={meetingIndicatorActive}
               expanded={!anyPanelOpen && isCompactPill}
               collapseToLogo={
                 listeningEntrance.collapseToLogo || assistantFooter.collapsePillToLogo
@@ -695,13 +750,14 @@ export default function App() {
               role={pillIsInteractive ? "button" : "status"}
               tabIndex={pillIsInteractive ? 0 : undefined}
               aria-label={
-                canReopenLiveTranscript
+                meetingTooltip ??
+                (canReopenLiveTranscript
                   ? t("transcriptionPreview.label")
                   : assistant.mounted
                     ? t("settingsPage.agentConfig.title")
                     : liveTranscript.mounted
                       ? t("transcriptionPreview.label")
-                      : micTooltip
+                      : micTooltip)
               }
               onMouseDown={(e) => {
                 if (anyPanelMounted) {
@@ -784,6 +840,19 @@ export default function App() {
             />
           )}
         </div>
+        {meetingPromptShown && (
+          <MeetingPromptCapsule
+            key={meetingPrompt.promptId}
+            ref={meetingPromptRef}
+            prompt={meetingPrompt}
+            align={voicePillPopoverAlign}
+            onRespond={respondMeetingPrompt}
+            onMouseEnter={() => setWindowInteractivity(true)}
+            onMouseLeave={() => {
+              if (!isCommandMenuOpen && toastCount === 0) setWindowInteractivity(false);
+            }}
+          />
+        )}
       </div>
 
       <VoiceModePanelCore

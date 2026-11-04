@@ -23,13 +23,24 @@ test("toSlimConfig maps store state and strips OpenWhispr cloud mode", async () 
     useCleanupModel: true,
     customPrompts: { cleanup: "fix this" },
     dictationKey: "F8",
+    meetingKey: "F9",
     customDictionary: ["Whispr"],
     theme: "auto",
     uiLanguage: "de",
     preferredLanguage: "auto",
+    meetingSummaryPrompt: "Focus on decisions",
+    meetingKeepAudio: true,
+    meetingAutoDetect: false,
   });
   assert.equal(cfg.stt.mode, "providers");
   assert.equal(cfg.stt.apiKey, "sk-stt");
   assert.equal(cfg.cleanup.prompt, "fix this");
+  assert.deepEqual(cfg.meeting, {
+    summaryPrompt: "Focus on decisions",
+    keepAudio: true,
+    detect: false,
+  });
+  assert.equal(cfg.meetingHotkey, "F9");
+  assert.equal(toSlimConfig({ meetingKey: "" }).meetingHotkey, "");
   assert.deepEqual(cfg.dictionary, ["Whispr"]);
 });

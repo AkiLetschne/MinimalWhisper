@@ -3246,6 +3246,18 @@ class DatabaseManager {
     }
   }
 
+  getMeetingNoteBySourceFile(sourceFile) {
+    if (!this.db) throw new Error("Database not initialized");
+    const accountScope = this._accountScopeCondition("notes");
+    return (
+      this.db
+        .prepare(
+          `SELECT * FROM notes WHERE source_file = ? AND note_type = 'meeting' AND deleted_at IS NULL AND ${accountScope.sql} LIMIT 1`
+        )
+        .get(sourceFile, ...accountScope.params) || null
+    );
+  }
+
   getNoteByCloudId(cloudId) {
     try {
       if (!this.db) {

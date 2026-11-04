@@ -6,6 +6,7 @@ import logger from "../utils/logger";
 let applying = false;
 let lastWritten = "";
 let writeTimer: ReturnType<typeof setTimeout> | null = null;
+let writes: Promise<void> = Promise.resolve();
 
 function snapshot(): SlimConfig {
   return toSlimConfig(useSettingsStore.getState());
@@ -35,7 +36,9 @@ type SlimConfig = {
     apiKey?: string;
     prompt?: string;
   };
+  meeting?: { summaryPrompt?: string; keepAudio?: boolean; detect?: boolean };
   hotkey?: string;
+  meetingHotkey?: string;
   dictionary?: string[];
   theme?: string;
   uiLanguage?: string;
@@ -89,7 +92,12 @@ export function applySlimConfig(cfg: SlimConfig): void {
       }
       if (cfg.cleanup.prompt !== undefined) s.setCustomPrompt("cleanup", cfg.cleanup.prompt);
     }
+    if (typeof cfg.meeting?.summaryPrompt === "string")
+      s.setMeetingSummaryPrompt(cfg.meeting.summaryPrompt);
+    if (typeof cfg.meeting?.keepAudio === "boolean") s.setMeetingKeepAudio(cfg.meeting.keepAudio);
+    if (typeof cfg.meeting?.detect === "boolean") s.setMeetingAutoDetect(cfg.meeting.detect);
     if (cfg.hotkey !== undefined) s.setDictationKey(cfg.hotkey);
+    if (cfg.meetingHotkey !== undefined) s.setMeetingKey(cfg.meetingHotkey);
     if (Array.isArray(cfg.dictionary)) s.setCustomDictionary(cfg.dictionary);
     if (cfg.theme === "light" || cfg.theme === "dark" || cfg.theme === "auto") {
       s.setTheme(cfg.theme);
@@ -103,18 +111,23 @@ export function applySlimConfig(cfg: SlimConfig): void {
 }
 
 async function writeNow(): Promise<void> {
-  const serialized = JSON.stringify(snapshot());
-  if (serialized === lastWritten) return;
-  lastWritten = serialized;
-  try {
-    await window.electronAPI?.writeJsonConfig?.(snapshot());
-  } catch (error) {
-    logger.warn(
-      "Failed to write JSON config",
-      { error: error instanceof Error ? error.message : String(error) },
-      "settings"
-    );
-  }
+  const config = snapshot();
+  const serialized = JSON.stringify(config);
+  const write = writes
+    .catch(() => {})
+    .then(async () => {
+      if (serialized === lastWritten) return;
+      await window.electronAPI?.writeJsonConfig?.(config);
+      lastWritten = serialized;
+    });
+  writes = write;
+  return write;
+}
+
+export async function flushJsonConfig(): Promise<void> {
+  if (writeTimer) clearTimeout(writeTimer);
+  writeTimer = null;
+  await writeNow();
 }
 
 export async function startJsonConfigSync(): Promise<string | null> {
@@ -147,16 +160,42 @@ export async function startJsonConfigSync(): Promise<string | null> {
     if (applying) return;
     if (writeTimer) clearTimeout(writeTimer);
     writeTimer = setTimeout(() => {
-      void writeNow();
+      void writeNow().catch((error) => {
+        logger.warn(
+          "Failed to write JSON config",
+          { error: error instanceof Error ? error.message : String(error) },
+          "settings"
+        );
+      });
     }, 250);
   });
 
+  let configChanges: Promise<void> = Promise.resolve();
   window.electronAPI.onJsonConfigChanged?.(() => {
-    void window.electronAPI.readJsonConfig?.().then((result) => {
-      if (!result?.data) return;
-      if (JSON.stringify(result.data) === lastWritten) return;
-      applySlimConfig(result.data);
-    });
+    configChanges = configChanges
+      .then(async () => {
+        const result = await window.electronAPI.readJsonConfig?.();
+        if (!result?.data || JSON.stringify(result.data) === lastWritten) return;
+        const config = result.data;
+        if (
+          typeof config.meetingHotkey === "string" &&
+          config.meetingHotkey !== useSettingsStore.getState().meetingKey
+        ) {
+          const registered = await window.electronAPI.registerMeetingHotkey?.(config.meetingHotkey);
+          if (!registered?.success) {
+            logger.warn(
+              "Failed to register meeting hotkey from JSON config",
+              { error: registered?.message },
+              "settings"
+            );
+            config.meetingHotkey = useSettingsStore.getState().meetingKey;
+          }
+        }
+        applySlimConfig(config);
+      })
+      .catch((error) =>
+        logger.warn("Failed to apply JSON config", { error: String(error) }, "settings")
+      );
   });
 
   return window.electronAPI.jsonConfigPath?.() ?? null;
