@@ -38,7 +38,11 @@ function createLinuxWindowInputRegion(win) {
   };
 
   const start = () => {
-    const binary = resolveBundledBinary("linux-fast-paste", "linux-input-region");
+    // Same source and protocol as linux-fast-paste. A copy under this name shapes
+    // input without also switching pasting over to the native helper.
+    const binary =
+      resolveBundledBinary("linux-input-region", "linux-input-region") ||
+      resolveBundledBinary("linux-fast-paste", "linux-input-region");
     if (!binary) throw new Error("Linux input region helper not found");
     const windowId = win.getNativeWindowHandle().readUInt32LE();
     if (!windowId) throw new Error("X11 window handle unavailable");

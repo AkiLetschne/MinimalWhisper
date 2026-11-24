@@ -68,6 +68,13 @@ Pasting needs one of `ydotool` (with `ydotoold` running), `wtype` or `xdotool`, 
 ("Minimal Whispr Toggle") while the app is running; KDE and Hyprland use their own shortcut
 systems.
 
+A desktop launcher does not build the native helpers. Without one, the transparent window around
+the pill swallows clicks. Install `gcc`, `libx11-dev` and `libxtst-dev`, then run:
+
+```bash
+npm run compile:linux-input-region
+```
+
 A minimal desktop entry for a source checkout
 (`~/.local/share/applications/minimal-whispr.desktop`):
 
