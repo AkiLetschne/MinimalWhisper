@@ -15,6 +15,7 @@
     "compile:text-monitor": "node scripts/build-text-monitor.js",
     "compile:winpaste": "node scripts/build-windows-fast-paste.js",
     "compile:linux-paste": "node scripts/build-linux-fast-paste.js",
+    "compile:linux-input-region": "node scripts/build-linux-input-region.js",
     "compile:linux-system-audio": "node scripts/build-linux-system-audio.js",
     "compile:media-remote": "node scripts/build-media-remote.js",
     "compile:mediaremote-adapter": "node scripts/build-mediaremote-adapter.js",
